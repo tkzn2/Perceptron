@@ -1,12 +1,16 @@
 package perceptron;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MyPerceptron {
 	
-	private static Vector<Double> Weight;
-	private static Vector<Vector<Double>> TrainX; 
-	private static Vector<Double> TrainY; 
+	private static List<Double> Weight;
+	private static List<List<Double>> TrainX; 
+	private static List<Double> TrainY; 
 	
 	private static final int N = 3;
 	private static final int TN = 4;
@@ -35,9 +39,9 @@ public class MyPerceptron {
 		
 	}
 	
-	private static void train(Vector<Double> w,Vector<Double> a,Double y)
+	private static void train(List<Double> w,List<Double> a,Double y)
 	{
-		double out = out(dot(w,a));
+		int out = out(dot(w,a));
 		for(int i = 0;i < N;i++)
 		{
 			w.set(i, w.get(i) + (y - out) * a.get(i) * ETA);
@@ -46,53 +50,39 @@ public class MyPerceptron {
 	
 	public static void init()
 	{
-		Weight = new Vector<>(N);
-		TrainX = new Vector<Vector<Double>>(TN);
-		TrainY = new Vector<>(TN);
-		
-		double tx[][] = {
-				{0,0,1},
-				{0,1,1},
-				{1,0,1},
-				{1,1,0}
+		Double tx[][] = {
+				{0.0,0.0,1.0},
+				{0.0,1.0,1.0},
+				{1.0,0.0,1.0},
+				{1.0,1.0,1.0}
 		};
 		
-		double ty[] = {0,0,0,1};
+		Double ty[] = {0.0,0.0,0.0,1.0};
+		
+		Weight = Stream.generate(() -> 0.0).limit(N).collect(Collectors.toList());
+		TrainX = new ArrayList<List<Double>>(TN);
+		TrainY = Arrays.stream(ty).collect(Collectors.toList());
 		
 		for(int i = 0;i < TN;i++)
 		{
-			TrainY.add(ty[1]);
-		}
-		
-		for(int i = 0;i < TN;i++)
-		{
-			TrainX.add(new Vector<Double>(N));
-			for(int j = 0;j < N;j++)
-			{
-				TrainX.get(i).add(tx[i][j]);
-			}
-		}
-		
-		for(int i = 0;i < N;i++)
-		{
-			Weight.add(0.0);
+			TrainX.add(Arrays.stream(tx[i]).collect(Collectors.toList()));
 		}
 	}
 	
-	public static double dot(Vector<Double> vec1,Vector<Double> vec2)
+	public static double dot(List<Double> vec1,List<Double> vec2)
 	{
 		double tmp=0;
 		int n = vec1.size();
 		for(int i = 0;i < n;i++)
 		{
-			tmp = vec1.get(i) * vec2.get(i);
+			tmp += vec1.get(i) * vec2.get(i);
 		}
 		return tmp;
 	}
 	
-	private static double out(double val)
+	private static int out(double val)
 	{
-		return val >= 0 ? 1 : 0;
+		return val > 0 ? 1 : 0;
 	}
 
 }
